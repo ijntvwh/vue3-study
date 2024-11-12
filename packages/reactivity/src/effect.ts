@@ -21,7 +21,10 @@ function postCleanEffect(effect) {
   for (let i = n; i < len; i++) {
     // 删除映射表中对应的effect
     // 删除未依赖的 dep -> effect
-    cleanDepEffect(effect.deps[i], effect)
+    const dep = effect.deps[i]
+    // flag,name,age -> flag,age
+    // 错误: i=2时把age的dep清理掉了
+    if (effect.deps.indexOf(dep) === i) cleanDepEffect(dep, effect)
   }
   // 更新依赖列表的长度
   effect.deps.length = n
@@ -77,7 +80,6 @@ function cleanDepEffect(dep, effect) {
 // 1._trackId 用于记录执行次数(防止一个属性在当前effect中多次依赖收集) 只收集一次
 // 2.拿到上一次依赖的最后一个和这次的比较
 export function trackEffect(effect, dep) {
-  
   // 需要重新的取收集依赖， 将不需要的移除掉
   if (dep.get(effect) !== effect._trackId) {
     // 更新id
