@@ -16,22 +16,24 @@
     // 自己的
     import { reactive, effect } from './dist/reactivity.js'
 
-      const obj = { name: 'jw', age: 30, flag: true }
+    const obj = { name: 'jw', age: 30, flag: true }
     const state = reactive(obj)
-    effect(() => {
+    const runner = effect(() => {
       // app.innerHTML = `姓名: ${state.name} 年龄: ${state.age}`
-      console.log('runner')
-      app.innerHTML = state.flag ? (state.name + state.age) : state.age
+      app.innerHTML = state.flag ? state.name : state.age
+    }, {
+
+      // 自定义调度器
+      scheduler() {
+        // AOP
+        console.log('数据更新了, 不重新渲染, 走自己的逻辑')
+        // 重新渲染
+        runner()
+      }
     })
-    // effect(() => {
-    //   app.innerHTML = `姓名: ${state.name}`
-    // })
     setTimeout(() => {
       state.flag = false
-      setTimeout(() => {
-        console.log("修改属性后, 不应该触发 effect重新执行了")
-        state.age = 31
-      }, 1000)
+      state.age = 32
     }, 1000)
   </script>
 </body>

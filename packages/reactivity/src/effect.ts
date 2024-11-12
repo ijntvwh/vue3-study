@@ -1,8 +1,20 @@
 export function effect(fn, options?) {
-  const _effect = new ReactiveEffect(fn, () => _effect.run())
-  _effect.run()
+  // 创建一个响应式effect 数据变化后可以重新执行
 
-  return _effect
+  // 创建一个effect, 只要依赖的属性变化了就要执行回调
+  const _effect = new ReactiveEffect(fn, () => {
+    // scheduler
+    _effect.run()
+  })
+  _effect.run()
+  if (options) {
+    // 用用户传递的覆盖掉内置的
+    Object.assign(_effect, options)
+  }
+
+  const runner = _effect.run.bind(_effect)
+  runner.effect = _effect
+  return runner
 }
 
 export let activeEffect
