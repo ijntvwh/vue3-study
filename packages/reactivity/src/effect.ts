@@ -47,6 +47,7 @@ class ReactiveEffect {
   _trackId = 0
   deps = []
   _depsLength = 0
+  _running = 0
 
   public active = true
 
@@ -67,10 +68,11 @@ class ReactiveEffect {
 
       // effect重新执行前,需要将上一次的依赖清空 effect.deps
       preCleanEffect(this)
-
+      this._running++
       // 进行依赖收集 全局activeEffect  -> state.name state.age
       return this.fn()
     } finally {
+      this._running--
       postCleanEffect(this)
       activeEffect = lastEffect
     }
@@ -112,8 +114,11 @@ export function trackEffect(effect, dep) {
 
 export function triggerEffects(dep) {
   for (const effect of dep.keys()) {
-    if (effect.scheduler) {
-      effect.scheduler()
+    if (!effect._running) {
+      if (effect.scheduler) {
+        // 如果不是正在执行, 才能执行
+        effect.scheduler() // effect.run()
+      }
     }
   }
 }

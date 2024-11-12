@@ -11,29 +11,21 @@
   <div id="app"></div>
   <script type="module">
     // 原生的
-    // import { reactive, effect } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
+      // import { reactive, effect } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
 
     // 自己的
-    import { reactive, effect } from './dist/reactivity.js'
+      import { reactive, effect } from './dist/reactivity.js'
 
-    const obj = { name: 'jw', age: 30, flag: true }
+      const obj = { name: 'jw', age: 30, flag: true, address: { n: 1 } }
     const state = reactive(obj)
     const runner = effect(() => {
-      // app.innerHTML = `姓名: ${state.name} 年龄: ${state.age}`
-      app.innerHTML = state.flag ? state.name : state.age
-    }, {
-
-      // 自定义调度器
-      scheduler() {
-        // AOP
-        console.log('数据更新了, 不重新渲染, 走自己的逻辑')
-        // 重新渲染
-        runner()
-      }
+      app.innerHTML = `address: ${state.address.n}`
+      // 如果本次在执行effect的时候 更新了数据, 不会触发effect更新
+      // state.name = Math.random()
     })
+
     setTimeout(() => {
-      state.flag = false
-      state.age = 32
+      state.address.n = 602
     }, 1000)
   </script>
 </body>
