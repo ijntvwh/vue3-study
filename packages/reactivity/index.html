@@ -11,21 +11,22 @@
   <div id="app"></div>
   <script type="module">
     // 原生的
-      // import { reactive, effect } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
+    // import {
+    //   reactive,
+    //   effect,
+    //   ref
+    // } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
 
     // 自己的
-      import { reactive, effect } from './dist/reactivity.js'
+    import { reactive, effect, ref } from './dist/reactivity.js'
 
-      const obj = { name: 'jw', age: 30, flag: true, address: { n: 1 } }
-    const state = reactive(obj)
-    const runner = effect(() => {
-      app.innerHTML = `address: ${state.address.n}`
-      // 如果本次在执行effect的时候 更新了数据, 不会触发effect更新
-      // state.name = Math.random()
+    const flag = ref(false)
+    effect(() => {
+      app.innerHTML = flag.value ? 'jw' : 30
     })
 
     setTimeout(() => {
-      state.address.n = 602
+      flag.value = true
     }, 1000)
   </script>
 </body>

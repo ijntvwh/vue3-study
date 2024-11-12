@@ -4,9 +4,7 @@ import { mutableHandlers, ReactiveFlags } from './baseHandler'
 const reactiveMap = new WeakMap()
 
 // reactive shallowReactive
-export function reactive(target) {
-  return createReactiveObject(target)
-}
+
 function createReactiveObject(target) {
   // 统一做判断，响应式的对象只能是对象
   if (!isObject(target)) return target
@@ -21,4 +19,12 @@ function createReactiveObject(target) {
   const proxy = new Proxy(target, mutableHandlers)
   reactiveMap.set(target, proxy)
   return proxy
+}
+
+export function reactive(target) {
+  return createReactiveObject(target)
+}
+
+export function toReactive(value) {
+  return isObject(value) ? reactive(value) : value
 }
