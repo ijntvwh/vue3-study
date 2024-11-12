@@ -14,19 +14,33 @@
     // import {
     //   reactive,
     //   effect,
-    //   ref
+    //   ref,
+    //   toRef,
+    //   toRefs,
+    //   proxyRefs,
     // } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
 
     // 自己的
-    import { reactive, effect, ref } from './dist/reactivity.js'
+    import {
+      reactive,
+      effect,
+      ref,
+      toRef,
+      toRefs,
+      proxyRefs,
+    } from './dist/reactivity.js'
 
-    const flag = ref(false)
+    const state = reactive({ name: 'jw', age: 30 })
+    // const name = toRef(state, 'name')
+    // const age = toRef(state, 'age')
+    // const proxy = proxyRefs({ ...toRefs(state) })
+    const proxy = proxyRefs(state)
     effect(() => {
-      app.innerHTML = flag.value ? 'jw' : 30
+      console.log('toRefs', proxy.name, proxy.age)
     })
 
     setTimeout(() => {
-      flag.value = true
+      state.age = 31
     }, 1000)
   </script>
 </body>
