@@ -14,34 +14,56 @@
     // import {
     //   reactive,
     //   effect,
-    //   ref,
-    //   toRef,
-    //   toRefs,
-    //   proxyRefs,
+    //   computed,
     // } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
 
     // 自己的
     import {
       reactive,
       effect,
-      ref,
-      toRef,
-      toRefs,
-      proxyRefs,
+      computed,
     } from './dist/reactivity.js'
 
     const state = reactive({ name: 'jw', age: 30 })
-    // const name = toRef(state, 'name')
-    // const age = toRef(state, 'age')
-    // const proxy = proxyRefs({ ...toRefs(state) })
-    const proxy = proxyRefs(state)
-    effect(() => {
-      console.log('toRefs', proxy.name, proxy.age)
-    })
 
+    // computed 执行后的结果是一个ref 不可变的
+    // dirty = true
+
+    const aliasName = computed({
+      get(oldValue) {
+        console.log('oldValue', oldValue)
+        return '**' + state.name
+      },
+      set: (v) => console.log('v', v)
+    })
+    // const aliasName = computed(() => {
+    //   console.log('runner')
+    //   return '** ' + state.name
+    // })
+    // 多次访问此属性 只会执行一次
+
+    effect(() => {
+      console.log('aliasName', aliasName.value)
+      console.log('aliasName', aliasName.value)
+    })
     setTimeout(() => {
-      state.age = 31
-    }, 1000)
+      state.name = 'handsome_jw'
+    }, 1000);
+    /**
+     * 描述实现原理:
+     * 1.计算属性维护了一个dirty属性,默认是true,运行过一次会将dirty变为false,并且稍后依赖值变化后会再让dirty变为true
+     * 2.计算属性也是一个effect, 依赖的属性会收集这个计算属性,当前值变化后,会让computedEffect里面dirty变为true
+     * 3.计算属性具备收集能力的,可以收集对应的effect,依赖的值变化后会触发effect重新执行
+     *
+     * 计算属性aliasName, 依赖的值name
+     * 对内,计算属性本身就是一个effect, 有一个标识dirty=true,访问的时候会触发name属性的get方法(依赖收集)
+     * 将name属性和计算属性做一个映射,稍后name变化会触发计算属性的scheduler(触发计算属性收集的effect)
+     *
+     * 对外,计算属性可能在其他effect中使用,当取计算属性的时候,会对计算属性自身的effect进行依赖收集
+     * 如果name属性变化了,会通知计算属性将dirty变为true,并且触发重新渲染(触发计算属性收集的effect)
+     *
+     * name -> 计算属性dirty=true -> 计算属性的scheduler -> 触发计算属性收集的effect
+     */
   </script>
 </body>
 
