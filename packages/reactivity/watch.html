@@ -16,11 +16,18 @@
     //   watch,
     // } from '/node_modules/vue/dist/vue.esm-browser.js'
 
+    // const runner = effect(() => {
+
+    // }, {
+    //   scheduler: () => runner()
+    // })
+
     // 自己的
     import {
       ref,
       reactive,
       watch,
+      watchEffect,
     } from './dist/reactivity.js'
 
     const state = reactive({ name: 'jw', age: 30, address: { n: 1 } })
@@ -28,17 +35,21 @@
 
     watch(
       state,
+      // () => state.name,
       function (oldValue, newValue) {
-        console.log(oldValue, newValue)
+        console.log('watch', oldValue, newValue)
       },
       {
         deep: false,
-        // flush: 'sync'
+        immediate: true,
+        // flush: 'sync',
       }
     )
+    watchEffect(() => console.log('watchEffect', state.name))
     setTimeout(() => {
       // state.value = 2
-      state.name = 'handsome_jw'
+      state.name = 'handsome_jw1'
+      state.name = 'handsome_jw2'
       // state.address.n = 1
     }, 1000);
 
