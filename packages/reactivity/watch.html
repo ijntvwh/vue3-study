@@ -30,28 +30,58 @@
       watchEffect,
     } from './dist/reactivity.js'
 
-    const state = reactive({ name: 'jw', age: 30, address: { n: 1 } })
+    const val = ref('x')
+
+    function getData(t) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(t)
+        }, t)
+      })
+
+    }
+    let timer = 3000
+    watch(
+      val,
+      async (newVal, oldVal, onCleanup) => {
+        let flag = true
+        timer -= 1000
+        onCleanup(() => {
+          flag = false
+        })
+        const res = await getData(timer)
+        if (flag) app.innerHTML = res
+      })
+
+    // 第一次请求是2s后返回的， 第二次请求是1s后返回的
+    setTimeout(() => {
+      val.value = 'a'
+      val.value = 'b'
+    }, 1000)
+
+
+    // const state = reactive({ name: 'jw', age: 30, address: { n: 1 } })
     // const state = ref(1)
 
-    watch(
-      state,
-      // () => state.name,
-      function (oldValue, newValue) {
-        console.log('watch', oldValue, newValue)
-      },
-      {
-        deep: false,
-        immediate: true,
-        // flush: 'sync',
-      }
-    )
-    watchEffect(() => console.log('watchEffect', state.name))
-    setTimeout(() => {
-      // state.value = 2
-      state.name = 'handsome_jw1'
-      state.name = 'handsome_jw2'
-      // state.address.n = 1
-    }, 1000);
+    // watch(
+    //   state,
+    //   // () => state.name,
+    //   function (oldValue, newValue) {
+    //     console.log('watch', oldValue, newValue)
+    //   },
+    //   {
+    //     deep: false,
+    //     immediate: true,
+    //     // flush: 'sync',
+    //   }
+    // )
+    // watchEffect(() => console.log('watchEffect', state.name))
+    // setTimeout(() => {
+    //   // state.value = 2
+    //   state.name = 'handsome_jw1'
+    //   state.name = 'handsome_jw2'
+    //   // state.address.n = 1
+    // }, 1000);
 
   </script>
 </body>

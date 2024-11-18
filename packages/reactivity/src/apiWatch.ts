@@ -34,7 +34,7 @@ function doWatch(source, cb, { deep, immediate }) {
   // 产生一个可以给ReactiveEffect来使用的getter，需要对这个对象进行取值操作，会关联当前的reactiveEffect
   const reactiveGetter = source1 => traverse(source1, deep === false ? 1 : undefined)
   let getter
-  console.log('source', source)
+  // console.log('source', source)
   if (isReactive(source)) {
     getter = () => reactiveGetter(source)
   } else if (isRef(source)) {
@@ -44,10 +44,25 @@ function doWatch(source, cb, { deep, immediate }) {
   }
 
   let oldValue
+
+  let clean
+  const onCleanup = fn => {
+    // console.log('registry clean')
+    clean = () => {
+      fn()
+      clean = undefined
+    }
+  }
   const job = () => {
     if (cb) {
+      // debugger
       const newValue = effect.run()
-      cb(newValue, oldValue)
+
+      // debugger
+      // 在执行回调前，先调用上一次的清理操作进行清理
+      clean?.()
+
+      cb(newValue, oldValue, onCleanup)
       oldValue = newValue
     } else {
       effect.run()
@@ -66,4 +81,6 @@ function doWatch(source, cb, { deep, immediate }) {
     // watchEffect 直接执行即可
     effect.run()
   }
+  const unwatch = () => effect.stop()
+  return unwatch
 }

@@ -92,8 +92,11 @@ export class ReactiveEffect {
   }
 
   stop() {
-    // 后续来实现
-    this.active = false
+    if (this.active) {
+      this.active = false
+      preCleanEffect(this)
+      postCleanEffect(this)
+    }
   }
 }
 
