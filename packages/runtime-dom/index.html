@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import {
+      createRenderer,
+      render,
+      h
+    } from '/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js'
+
+    import { renderOptions } from './dist/runtime-dom.js'
+    // 1 createRenderer 可以自己创建渲染器 (让我们自己提供渲染的方式)
+    // 2 render 用内置的渲染器进行渲染（渲染dom元素的）
+    // 3 h方法创建一个虚拟dom （type，propsOrChildren,children）
+    /**
+     * runtime-dom 它的作用就是提供DOM API
+     * runtime-dom -> runtime-core -> reactivity
+     */
+
+
+    const ele = h(
+      'h1',
+      {
+        style: { color: 'red' },
+        class: 'abc',
+        onClick: () => alert(1),
+        a: 1
+      },
+      'handsome jw'
+    )
+    // render(ele, app)
+
+    const renderer = createRenderer(renderOptions)
+    renderer.render(ele, app)
+
+  </script>
+</body>
+
+</html>
