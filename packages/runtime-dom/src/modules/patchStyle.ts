@@ -5,7 +5,7 @@ export function patchStyle(el, prevValue, nextValue) {
   }
   if (prevValue) {
     for (let key in prevValue) {
-      if (!nextValue[key]) {
+      if (!nextValue?.[key]) {
         style[key] = null
       }
     }
